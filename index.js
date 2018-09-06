@@ -5,7 +5,7 @@ const querystring = require('querystring');
 const _ = require('lodash');
 const fs = require('fs');
 
-const { rooms, dataDir = './data'} = require('./input.json');
+const { rooms, dataDir = './data', endDate } = require('./input.json');
 
 nconf.argv()
   .env()
@@ -14,11 +14,12 @@ nconf.argv()
 const historyUrl = (roomName, opts) => `${nconf.get('HIPCHAT_API_URL')}/room/${encodeURIComponent(roomName)}/history?${querystring.stringify(opts)}`;
 
 const getHistory = async (roomName) => {
-  const opts = {
+  const opts = _.pickBy({
     auth_token: nconf.get('HIPCHAT_TOKEN'),
     'max-results': 1000,
     include_deleted: false,
-  };
+    'end-date': endDate,
+  }, item => item !== undefined);
   const { body } = await request.get(historyUrl(roomName, opts));
   const { items: messages } = body;
   const firstMessageDate = _.first(messages).date;
