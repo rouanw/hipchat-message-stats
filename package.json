@@ -1,7 +1,7 @@
 {
-  "name": "contrib-stats",
+  "name": "hipchat-message-stats",
   "version": "1.0.0",
-  "description": "",
+  "description": "See who's talking the most in your hipchat rooms",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
