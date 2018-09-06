@@ -11,19 +11,21 @@ nconf.argv()
   .env()
   .file({ file: '.env.json' });
 
+const defaultOpts = _.pickBy({
+  auth_token: nconf.get('HIPCHAT_TOKEN'),
+  'max-results': 1000,
+  include_deleted: false,
+  'end-date': endDate,
+  reverse: false,
+}, item => item !== undefined);
+
 const historyUrl = (roomName, opts) => `${nconf.get('HIPCHAT_API_URL')}/room/${encodeURIComponent(roomName)}/history?${querystring.stringify(opts)}`;
 
 const getHistory = async (roomName) => {
-  const opts = _.pickBy({
-    auth_token: nconf.get('HIPCHAT_TOKEN'),
-    'max-results': 1000,
-    include_deleted: false,
-    'end-date': endDate,
-  }, item => item !== undefined);
-  const { body } = await request.get(historyUrl(roomName, opts));
+  const { body } = await request.get(historyUrl(roomName, defaultOpts));
   const { items: messages } = body;
-  const firstMessageDate = _.first(messages).date;
-  const lastMessageDate = _.last(messages).date;
+  const lastMessageDate = _.first(messages).date;
+  const firstMessageDate = _.last(messages).date;
   const metadata = { firstMessageDate, lastMessageDate };
   const counts = _(messages)
     .filter('from.name')
